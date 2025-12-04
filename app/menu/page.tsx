@@ -7,28 +7,28 @@ export default function MenuPage() {
             name: 'Margherita Pizza', 
             description: 'Classic pizza with fresh mozzarella', 
             price: 12.99,
-            image: '/images/pizza.jpg'
+            image: 'https://picsum.photos/200'
         },
         {
             id: 2, 
             name: 'Burger', 
             description: 'Classic burger with cheese', 
             price: 8.99,
-            image: '/images/burger.jpg'
+            image: 'https://picsum.photos/200'
         },
         {
             id: 3, 
             name: 'Pepsi', 
             description: 'Refreshing Drink', 
             price: 4.99,
-            image: '/images/pepsi.jpg'
+            image: 'https://picsum.photos/200'
         },
         {
             id: 4, 
             name: 'Coco Cola', 
             description: 'Refreshing Drink', 
             price: 4.99,
-            image: '/images/cola.jpg'
+            image: 'https://picsum.photos/200'
         },
     ]
     return (
