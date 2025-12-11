@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { CartItem, MenuItem } from '@/types/cart';
 
 // Define what functions our cart will have
@@ -21,6 +21,29 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
     // useState stores our cart items
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    // Load cart from localStorage when app starts (client-side only)
+    useEffect(() => {
+        const savedCart = localStorage.getItem('foodie-cart');
+        if (savedCart) {
+            try {
+                const parsedCart = JSON.parse(savedCart);
+                // eslint-disable-next-line
+                setCartItems(parsedCart);
+            } catch (error) {
+                console.error('Error loading cart from localStorage:', error);
+            }
+        }
+        setIsLoaded(true);
+    }, []);
+
+    // Save cart to localStorage whenever it changes (but not on initial load)
+    useEffect(() => {
+        if (isLoaded) {
+            localStorage.setItem('foodie-cart', JSON.stringify(cartItems));
+        }
+    }, [cartItems, isLoaded]);
 
     // Function to add an item to cart
     const addToCart = (item: MenuItem) => {
