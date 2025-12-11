@@ -1,0 +1,87 @@
+"use client";
+
+import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { CartItem, MenuItem } from '@/types/cart';
+
+// Define what functions our cart will have
+type CartContextType = {
+    cartItems: CartItem[];
+    addToCart: (item: MenuItem) => void;
+    removeFromCart: (id: string) => void;
+    clearCart: () => void;
+    getTotalItems: () => number;
+    getTotalPrice: () => number;
+};
+
+// Create the context (the storage box)
+const CartContext = createContext<CartContextType | undefined>(undefined);
+
+// This component will wrap our app and provide cart functionality
+export function CartProvider({ children }: { children: ReactNode }) {
+    // useState stores our cart items
+    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+
+    // Function to add an item to cart
+    const addToCart = (item: MenuItem) => {
+        setCartItems((prevItems) => {
+            // Check if item already exists in cart
+            const existingItem = prevItems.find((cartItem) => cartItem.id === item.id);
+
+            if (existingItem) {
+                // If it exists, increase quantity by 1
+                return prevItems.map((cartItem) =>
+                    cartItem.id === item.id
+                        ? { ...cartItem, quantity: cartItem.quantity + 1 }
+                        : cartItem
+                );
+            } else {
+                // If it's new, add it with quantity 1
+                return [...prevItems, { ...item, quantity: 1 }];
+            }
+        });
+    };
+
+    // Function to remove an item from cart
+    const removeFromCart = (id: string) => {
+        setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
+    };
+
+    // Function to clear entire cart
+    const clearCart = () => {
+        setCartItems([]);
+    };
+
+    // Function to get total number of items
+    const getTotalItems = () => {
+        return cartItems.reduce((total, item) => total + item.quantity, 0);
+    };
+
+    // Function to get total price
+    const getTotalPrice = () => {
+        return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+    };
+
+    return (
+        <CartContext.Provider
+            value={{
+                cartItems,
+                addToCart,
+                removeFromCart,
+                clearCart,
+                getTotalItems,
+                getTotalPrice,
+            }}
+        >
+            {children}
+        </CartContext.Provider>
+    );
+}
+
+// Custom hook to use the cart
+export function useCart() {
+    const context = useContext(CartContext);
+    if (context === undefined) {
+        throw new Error('useCart must be used within a CartProvider');
+    }
+    return context;
+}
